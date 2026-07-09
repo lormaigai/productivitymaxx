@@ -1,0 +1,11 @@
+@use '../collapsible-shared' as *;
+
+@include collapsible-shared;
+
+.collapsible-header {
+  padding-bottom: var(--s);
+
+  &:focus {
+    outline: none;
+  }
+}

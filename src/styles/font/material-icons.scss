@@ -1,0 +1,28 @@
+@use '../mixins/material-icon';
+
+// Material Symbols (replaces legacy Material Icons)
+// Package: https://www.npmjs.com/package/@material-symbols/font-400
+// Documentation: https://developers.google.com/fonts/docs/material_symbols
+
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 400;
+  // `block` (not `swap`) so the brief load window renders blank glyph space instead
+  // of the ligature names (e.g. "settings", "wb_sunny") as fallback-font text (#8138).
+  font-display: block;
+  src: url('../../assets/fonts/material-symbols-outlined.woff2') format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  @include material-icon.materialIconBase();
+
+  // Set default font variation settings for consistent appearance
+  // FILL: 0 (outlined), wght: 400 (normal), GRAD: 0 (default), opsz: 24 (24px)
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}

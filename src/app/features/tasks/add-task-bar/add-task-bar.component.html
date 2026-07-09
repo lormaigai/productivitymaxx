@@ -1,0 +1,187 @@
+<div
+  class="add-task-container"
+  [class.isGlobalBarVariant]="isGlobalBarVariant()"
+  @blendInOut
+>
+  <div class="input-section">
+    <input
+      #inputEl
+      class="main-input nr-of-btns-{{ nrOfRightBtns() }}"
+      [(ngModel)]="stateService.inputTxt"
+      [tabindex]="tabindex()"
+      [mention]="tagMentions$ | async"
+      [mentionConfig]="mentionCfg$ | async"
+      [mentionListTemplate]="mentionListTemplate"
+      (listShownChange)="updateListShown($event)"
+      [matAutocomplete]="taskAutoCompleteEl"
+      [placeholder]="
+        isSearchMode()
+          ? (T.F.TASK.ADD_TASK_BAR.PLACEHOLDER_SEARCH | translate)
+          : (T.F.TASK.ADD_TASK_BAR.PLACEHOLDER_CREATE | translate)
+      "
+      matInput
+      spellcheck="false"
+      (keydown)="onInputKeydown($event)"
+      (input)="onInputChange($event)"
+      (paste)="onPaste($event)"
+    />
+
+    <div class="right-button-controls">
+      @if (stateService.inputTxt() && !isSearchMode()) {
+        <div class="separator-box">
+          <button
+            mat-icon-button
+            class="switch-add-to-btn e2e-add-task-submit"
+            (click)="onSubmitBtnClick()"
+            type="submit"
+            [matTooltip]="T.F.TASK.ADD_TASK_BAR.TOOLTIP_ADD_TASK | translate"
+            matTooltipPosition="above"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      }
+
+      <button
+        mat-icon-button
+        class="switch-add-to-bot-btn"
+        (click)="toggleIsAddToBottom()"
+        [matTooltip]="
+          isAddToBottom()
+            ? (T.F.TASK.ADD_TASK_BAR.TOOLTIP_ADD_TO_TOP | translate)
+            : (T.F.TASK.ADD_TASK_BAR.TOOLTIP_ADD_TO_BOTTOM | translate)
+        "
+        matTooltipPosition="above"
+      >
+        <mat-icon
+          >{{ isAddToBottom() ? 'vertical_align_bottom' : 'vertical_align_top' }}
+        </mat-icon>
+      </button>
+
+      @if (currentProject()?.isEnableBacklog) {
+        <button
+          mat-icon-button
+          class="switch-add-to-btn"
+          (click)="toggleIsAddToBacklog()"
+          [matTooltip]="
+            isAddToBacklog()
+              ? (T.F.TASK.ADD_TASK_BAR.TOOLTIP_ADD_TO_TODAY | translate)
+              : (T.F.TASK.ADD_TASK_BAR.TOOLTIP_ADD_TO_BACKLOG | translate)
+          "
+          matTooltipPosition="above"
+        >
+          <mat-icon>{{ isAddToBacklog() ? 'inbox' : 'today' }}</mat-icon>
+        </button>
+      }
+
+      <button
+        mat-icon-button
+        class="search-toggle-btn"
+        [class.active]="isSearchMode()"
+        (click)="toggleSearchMode()"
+        [matTooltip]="
+          isSearchMode()
+            ? (T.F.TASK.ADD_TASK_BAR.TOOLTIP_DISABLE_SEARCH | translate)
+            : (T.F.TASK.ADD_TASK_BAR.TOOLTIP_ENABLE_SEARCH | translate)
+        "
+        matTooltipPosition="above"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (isSearchMode()) {
+    @if (activatedIssueTask() && activatedIssueTask()!.issueType === undefined) {
+      <div class="add-issue-info-text bold">
+        <mat-icon>playlist_add</mat-icon>
+        {{
+          T.F.TASK.ADD_TASK_BAR.ADD_EXISTING_TASK
+            | translate: { taskTitle: activatedIssueTask()!.title }
+        }}
+      </div>
+    } @else {
+      <div class="add-issue-info-text">
+        <mat-icon>playlist_add</mat-icon>
+        {{ T.F.TASK.ADD_TASK_BAR.SEARCH_INFO_TEXT | translate }}
+      </div>
+    }
+  } @else {
+    <add-task-bar-actions
+      [isHideTagBtn]="!!planForDay()"
+      [isHideDueBtn]="!!planForDay()"
+      (refocus)="focusInput()"
+      (toggleNote)="toggleNote()"
+      (scheduleDialogOpenChange)="onScheduleDialogOpenChange($event)"
+    ></add-task-bar-actions>
+
+    @if (stateService.isNoteExpanded()) {
+      <div class="note-input-section">
+        <textarea
+          #noteEl
+          class="note-input"
+          cdkTextareaAutosize
+          cdkAutosizeMinRows="3"
+          cdkAutosizeMaxRows="8"
+          [(ngModel)]="stateService.noteTxt"
+          [placeholder]="T.F.TASK.ADD_TASK_BAR.NOTE_PLACEHOLDER | translate"
+          (keydown)="onNoteKeydown($event)"
+        ></textarea>
+      </div>
+    }
+  }
+</div>
+
+<mat-autocomplete
+  #taskAutoCompleteEl="matAutocomplete"
+  class="add-task-bar-panel"
+  (optionActivated)="onTaskSuggestionActivated($event?.option?.value)"
+  (optionSelected)="onTaskSuggestionSelected($event.option.value)"
+  [autoActiveFirstOption]="true"
+>
+  @for (
+    item of suggestions$ | async;
+    track item.taskId || (item.issueData && item.issueData.id)
+  ) {
+    <mat-option [value]="item">
+      @if (item.issueType) {
+        <mat-icon [svgIcon]="item.issueType | issueIcon"></mat-icon>
+      } @else if (item.taskId && item.isArchivedTask) {
+        <mat-icon>archive</mat-icon>
+      } @else if (item.taskId) {
+        <!--        <mat-icon>task</mat-icon>-->
+      } @else if (!item.ctx) {
+        <mat-icon>library_books</mat-icon>
+      }
+      <span [innerHTML]="item?.titleHighlighted || item?.title"></span>
+      @if (item.ctx) {
+        <tag
+          [tag]="item.ctx"
+          [isHideTitle]="isHideTagTitles()"
+        ></tag>
+      }
+    </mat-option>
+  }
+</mat-autocomplete>
+
+<ng-template
+  #mentionListTemplate
+  let-item="item"
+>
+  @if (item.id) {
+    <select-option-row
+      [title]="item.title"
+      [icon]="item.icon"
+      [color]="item.color"
+      [folderPath]="getFolderPath(item.id)"
+    ></select-option-row>
+  } @else {
+    {{ item.title }}
+  }
+</ng-template>
+
+@if (isSearchLoading()) {
+  <div class="spinner">
+    <mat-spinner diameter="24"></mat-spinner>
+  </div>
+}

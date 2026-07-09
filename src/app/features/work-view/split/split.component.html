@@ -1,0 +1,19 @@
+<div
+  [class.isHideShadow]="pos > 10"
+  class="handle bgc-600"
+>
+  <button
+    #buttonEl
+    (dblclick)="toggle()"
+    (mousedown)="onMouseDown()"
+    (touchstart)="onTouchStart()"
+    [class.isAnimate]="isAnimateBtn()"
+    color="primary"
+    mat-fab
+  >
+    @if (counter) {
+      <span class="counter">{{ counter }}</span>
+    }
+    <mat-icon>library_books</mat-icon>
+  </button>
+</div>

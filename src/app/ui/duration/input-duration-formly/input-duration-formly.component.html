@@ -1,0 +1,13 @@
+<input
+  [name]="props.name"
+  [required]="!!props.required"
+  [readonly]="props.readonly"
+  [formControl]="formControl"
+  [formlyAttributes]="field"
+  inputDuration
+  [isAllowSeconds]="field.templateOptions?.isAllowSeconds"
+  [isShowZeroVal]="field.templateOptions?.isShowZeroVal"
+  [isValidate]="!!field.templateOptions?.required"
+  (change)="onInputValueChange($event)"
+  matInput
+/>

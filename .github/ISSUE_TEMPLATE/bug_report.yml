@@ -1,0 +1,76 @@
+name: 🚨 Bug Report
+description: Report a bug you encountered.
+title: '🚨 '
+type: Bug
+
+body:
+  - type: input
+    id: environment-version
+    attributes:
+      label: Version Used
+      description: Version number and package type (e.g., exe, snap, deb, installer).
+      placeholder: "e.g. 'v7.12.0 snap' or 'v2.2.1 firefox'"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Current Behavior
+      description: Tell us what happens instead of the expected behavior.
+      placeholder: "e.g. When I click the 'Save' button, the application crashes / nothing happens / an error message appears."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: Tell us what should happen.
+      placeholder: "e.g. When I click the 'Save' button, the data should be saved without errors."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Provide a clear set of steps to reproduce this bug.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+
+  - type: dropdown
+    id: reliability
+    attributes:
+      label: Can you reproduce this reliably?
+      description: Was this a one-time occurrence, or can you make it happen every time by following the steps?
+      options:
+        - 'Yes, I can reproduce it reliably.'
+        - "Sometimes, it's intermittent."
+        - 'No, it only happened once.'
+    validations:
+      required: true
+
+  - type: textarea
+    id: console-output
+    attributes:
+      label: Console Output
+      description: Is there any output if you press `Ctrl+Shift+i` (or `Cmd+Alt+i` on Mac) and check the 'Console' tab? If so, please paste it here.
+      placeholder: 'Paste any relevant console logs here...'
+      render: shell # Use 'shell' or 'log' for better formatting of code/logs
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: docs-impact
+    attributes:
+      label: Documentation
+      description: Optionally, indicate whether documentation updates are needed.
+      options:
+        - label: The documentation/[wiki](https://github.com/super-productivity/super-productivity/wiki) is unclear or incorrect for this case.
+        - label: There should be a note added to the documentation/[wiki](https://github.com/super-productivity/super-productivity/wiki) for this case.

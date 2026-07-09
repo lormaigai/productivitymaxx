@@ -1,0 +1,18 @@
+node_modules
+dist
+data
+./.env
+.env
+
+# Generated from privacy.template.html at server startup
+public/privacy.html
+
+# Health alert state
+.health-alert/
+
+# Testing artifacts
+.env.test
+backups/
+initdb.d/
+secrets/
+tde-keys/
